@@ -1,1 +1,65 @@
-data/
+data/# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual Environment
+venv/
+env/
+.env
+.venv
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Data files (large raw data — don't push to GitHub)
+data/raw/
+*.csv
+*.txt
+*.soft
+*.gz
+*.zip
+*.tar
+*.h5
+*.hdf5
+
+# Model files (too large for GitHub)
+models/
+*.pkl
+*.joblib
+*.h5
+*.pt
+*.pth
+
+# Results & outputs (generated locally)
+results/
+outputs/
+logs/
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Environment variables
+.env
+.env.local
+
+# Credentials / API keys (never push these!)
+secrets.json
+credentials.json
+*.key
