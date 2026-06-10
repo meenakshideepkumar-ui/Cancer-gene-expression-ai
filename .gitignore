@@ -12,7 +12,6 @@ build/
 # Virtual Environment
 venv/
 env/
-.env
 .venv
 
 # Jupyter Notebooks
@@ -21,8 +20,6 @@ env/
 
 # Data files (large raw data — don't push to GitHub)
 data/raw/
-*.csv
-*.txt
 *.soft
 *.gz
 *.zip
