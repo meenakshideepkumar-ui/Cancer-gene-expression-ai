@@ -9,8 +9,8 @@ This project applies machine learning and AI techniques to detect stress-related
 - **Source**: [NIH Gene Expression Omnibus (GEO)](https://www.ncbi.nlm.nih.gov/geo/) — National Center for Biotechnology Information (NCBI), National Institutes of Health (NIH)
 - **Access**: Publicly available at `https://www.ncbi.nlm.nih.gov/geo/`
 - **Format**: Series Matrix files (`.txt`), soft files (`.soft`), or tab-separated count matrices
-- **Dataset IDs**: GSE_____ *(fill in the GSE ID you selected)*
-- **Organism**: Human *(or specify your organism)*
+- **Dataset IDs**: GSE64813, GSE63878
+- **Organism**: Human 
 - **Study Type**: Expression profiling by RNA-seq / microarray
 
 ### How we downloaded the data
@@ -40,7 +40,7 @@ print(df.head())
 
 ```bash
 git clone https://github.com/your-username/your-repo.git
-cd your-repo
+cd stress-signals-gene-expression-ai
 pip install -r requirements.txt
 ```
 
@@ -63,7 +63,6 @@ python evaluate.py --output results/
 ---
 
 ## Results
-> *(To be updated after experiments)*
 - Model accuracy: —
 - F1-score: —
 - ROC-AUC: —
