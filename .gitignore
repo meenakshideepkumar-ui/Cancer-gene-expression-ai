@@ -15,35 +15,51 @@ env/
 ENV/
 .venv/
 
-# Jupyter
+# Jupyter / Colab
 .ipynb_checkpoints/
 *.ipynb_checkpoints
+.colab/
 
-# Data files (large / should not be committed)
+# Raw / intermediate data files (large — should not be committed)
 data/*.txt
 data/*.csv
 data/*.tsv
 data/*.gz
 data/raw/
 data/processed/
-*.h5
 *.npz
 *.npy
 
-# Trained models
-*.pkl
-*.joblib
+# Trained model artifacts (large — use Git LFS or external hosting instead)
+models/*.h5
+models/*.keras
+models/*.pkl
+models/*.joblib
 *.h5
 *.keras
+*.pkl
+*.joblib
 saved_models/
 
-# Results / outputs (optional — remove if you want to commit plots)
+# Backend
+backend/__pycache__/
+backend/*.log
+instance/
+
+# Frontend (if using React/Node)
+frontend/node_modules/
+frontend/build/
+frontend/dist/
+frontend/.env
+
+# Results / outputs (optional — remove these lines if you want to commit plots)
 results/*.png
 results/*.pdf
 *.log
 
 # Environment variables / secrets
 .env
+.env.local
 
 # OS files
 .DS_Store
