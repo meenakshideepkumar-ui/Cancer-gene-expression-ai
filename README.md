@@ -88,8 +88,13 @@ _(Fill in after training: accuracy, F1, ROC-AUC for both models, top biomarker g
 
 ## Team
 
-- **[Name A]** — Data pipeline, preprocessing, feature selection, autoencoder (Colab)
-- **[Name B]** — CNN, Random Forest/XGBoost, SHAP explainability, evaluation (Colab), backend API, frontend integration
+**[Meenakshi]**
+- ML pipeline: preprocessing, feature selection, autoencoder (Colab)
+- Backend: Flask/FastAPI app, model inference pipeline, API endpoints, backend deployment
+
+**[Namitha]**
+- ML pipeline: CNN, XGBoost/Random Forest, SHAP explainability, evaluation (Colab)
+- Frontend: web UI, API integration, results/SHAP display, frontend deployment
 
 ## References
 
