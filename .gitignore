@@ -1,1 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
 
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Data files (large / should not be committed)
+data/*.txt
+data/*.csv
+data/*.tsv
+data/*.gz
+data/raw/
+data/processed/
+*.h5
+*.npz
+*.npy
+
+# Trained models
+*.pkl
+*.joblib
+*.h5
+*.keras
+saved_models/
+
+# Results / outputs (optional — remove if you want to commit plots)
+results/*.png
+results/*.pdf
+*.log
+
+# Environment variables / secrets
+.env
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
