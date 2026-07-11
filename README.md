@@ -20,6 +20,42 @@ This project classifies patients as Cancer/Normal (or by cancer subtype) using h
 
 ## Project Structure
 
+├── notebooks/                  # Colab notebooks used for training
+│   ├── 01_preprocessing.ipynb
+│   ├── 02_feature_selection.ipynb
+│   ├── 03_autoencoder.ipynb
+│   ├── 04_cnn_model.ipynb
+│   ├── 05_rf_xgb_model.ipynb
+│   ├── 06_shap_analysis.ipynb
+│   └── 07_evaluation.ipynb
+├── src/                         # Reusable pipeline code (mirrors notebook logic)
+│   ├── preprocessing.py
+│   ├── feature_selection.py
+│   ├── autoencoder.py
+│   ├── cnn_model.py
+│   ├── rf_xgb_model.py
+│   ├── shap_analysis.py
+│   └── evaluate.py
+├── models/                      # Trained model artifacts downloaded from Colab
+│   ├── encoder_model.h5
+│   ├── cnn_model.h5
+│   ├── xgb_model.pkl
+│   ├── scaler.pkl
+│   └── selected_genes.pkl
+├── backend/                     # Flask/FastAPI app serving the trained models
+│   ├── app.py
+│   ├── predict.py               # /predict endpoint — CNN pipeline (Person A)
+│   ├── explain.py               # /explain endpoint — SHAP pipeline (Person B)
+│   └── requirements.txt
+├── frontend/                    # Web UI (HTML/CSS/JS or React)
+│   ├── index.html
+│   ├── style.css
+│   └── script.js
+├── results/                     # Plots, metrics, SHAP outputs (from training)
+├── requirements.txt
+├── README.md
+└── .gitignore
+
 ## Dataset
 
 - **Source:** NIH Gene Expression Omnibus (GEO) — https://www.ncbi.nlm.nih.gov/geo/ and/or The Cancer Genome Atlas (TCGA) — https://portal.gdc.cancer.gov/
@@ -88,13 +124,24 @@ _(Fill in after training: accuracy, F1, ROC-AUC for both models, top biomarker g
 
 ## Team
 
-**[Meenakshi]**
-- ML pipeline: preprocessing, feature selection, autoencoder (Colab)
-- Backend: Flask/FastAPI app, model inference pipeline, API endpoints, backend deployment
+**[Meenakshi] — Prediction Track**
+- ML: Preprocessing, feature selection, autoencoder, 1D-CNN classifier (Colab)
+- Backend: `/predict` API endpoint (model inference pipeline, deployment)
+- Frontend: Prediction results UI (input form, confidence display)
 
-**[Namitha]**
-- ML pipeline: CNN, XGBoost/Random Forest, SHAP explainability, evaluation (Colab)
-- Frontend: web UI, API integration, results/SHAP display, frontend deployment
+**[Namitha] — Explainability Track**
+- ML: XGBoost/Random Forest classifier, SHAP analysis, model evaluation (Colab)
+- Backend: `/explain` API endpoint (SHAP inference pipeline, deployment)
+- Frontend: SHAP/biomarker visualization UI, overall UI layout
+
+## Work Division
+
+This project is split into two end-to-end tracks:
+
+- **Prediction Track:** preprocessing → feature selection → autoencoder → 1D-CNN → `/predict` API → results UI
+- **Explainability Track:** XGBoost/Random Forest → SHAP → evaluation → `/explain` API → SHAP visualization UI
+
+Both tracks share the same preprocessed feature set and dataset, and are integrated behind a common frontend.
 
 ## References
 
