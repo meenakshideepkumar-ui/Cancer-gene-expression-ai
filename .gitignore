@@ -31,13 +31,7 @@ data/processed/
 *.npy
 
 # Trained model artifacts (large — use Git LFS or external hosting instead)
-models/*.h5
-models/*.keras
-models/*.pkl
 models/*.joblib
-*.h5
-*.keras
-*.pkl
 *.joblib
 saved_models/
 
