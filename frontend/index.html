@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Gene Expression Cancer Prediction</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #EFF2EF;
+    --panel: #FFFFFF;
+    --ink: #10241F;
+    --ink-soft: #52625C;
+    --ink-faint: #8B978F;
+    --line: #D7DED9;
+    --line-soft: #E6EAE7;
+    --accent-normal: #2E7A57;
+    --accent-normal-bg: #E6F1EA;
+    --accent-tumor: #B23B2E;
+    --accent-tumor-bg: #F6E7E4;
+    --readout-bg: #0F211D;
+    --readout-fg: #7CE8B3;
+    --readout-fg-dim: #3F6656;
+    --focus: #1F5C46;
+  }
+
+  * { box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    padding: 48px 20px 80px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  .wrap{
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  /* ---------- Letterhead ---------- */
+  .letterhead{
+    display:flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 18px;
+    margin-bottom: 6px;
+  }
+  .letterhead-title{
+    font-family: 'Newsreader', serif;
+    font-size: 30px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+  .letterhead-eyebrow{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin: 0 0 8px;
+  }
+  .letterhead-meta{
+    text-align: right;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-faint);
+    line-height: 1.6;
+  }
+  .subline{
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin: 10px 0 40px;
+    max-width: 560px;
+    line-height: 1.55;
+  }
+
+  /* ---------- Layout ---------- */
+  .grid{
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: 28px;
+  }
+  @media (max-width: 760px){
+    .grid{ grid-template-columns: 1fr; }
+  }
+
+  .panel{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+  }
+
+  .panel-head{
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .panel-head h2{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin: 0;
+    color: var(--ink-soft);
+  }
+  .panel-body{ padding: 20px; }
+
+  /* ---------- Input panel ---------- */
+  .field-label{
+    display:block;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .field-hint{
+    font-size: 11.5px;
+    color: var(--ink-faint);
+    margin: -3px 0 10px;
+    line-height: 1.5;
+  }
+
+  .tabs{
+    display:flex;
+    gap: 2px;
+    margin-bottom: 16px;
+    background: var(--line-soft);
+    padding: 3px;
+    border-radius: 4px;
+  }
+  .tab-btn{
+    flex:1;
+    border: none;
+    background: transparent;
+    padding: 8px 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  .tab-btn.active{
+    background: var(--panel);
+    color: var(--ink);
+    box-shadow: 0 1px 2px rgba(16,36,31,0.08);
+  }
+  .tab-btn:focus-visible{ outline: 2px solid var(--focus); outline-offset: 2px; }
+
+  .tab-pane{ display:none; }
+  .tab-pane.active{ display:block; }
+
+  textarea{
+    width: 100%;
+    min-height: 130px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--ink);
+    background: #FAFBFA;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 12px;
+    resize: vertical;
+  }
+  textarea:focus-visible, input:focus-visible{
+    outline: 2px solid var(--focus);
+    outline-offset: 1px;
+  }
+
+  .upload-box{
+    border: 1.5px dashed var(--line);
+    border-radius: 3px;
+    padding: 28px 16px;
+    text-align: center;
+    background: #FAFBFA;
+  }
+  .upload-box p{
+    margin: 10px 0 2px;
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+  .upload-box .fname{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--ink);
+    margin-top: 6px;
+  }
+  input[type="file"]{ display:none; }
+  .upload-label{
+    display: inline-block;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--focus);
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .btn-row{
+    display:flex;
+    gap: 10px;
+    margin-top: 18px;
+  }
+  button.primary{
+    flex: 1;
+    background: var(--ink);
+    color: #fff;
+    border: none;
+    padding: 12px 16px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    border-radius: 3px;
+    cursor: pointer;
+    letter-spacing: 0.01em;
+  }
+  button.primary:hover{ background: #0A1613; }
+  button.primary:disabled{ background: var(--ink-faint); cursor: not-allowed; }
+  button.secondary{
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    padding: 12px 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  button.secondary:hover{ border-color: var(--ink-soft); color: var(--ink); }
+  button:focus-visible{ outline: 2px solid var(--focus); outline-offset: 2px; }
+
+  .error-msg{
+    margin-top: 12px;
+    font-size: 12.5px;
+    color: var(--accent-tumor);
+    background: var(--accent-tumor-bg);
+    border: 1px solid rgba(178,59,46,0.25);
+    padding: 10px 12px;
+    border-radius: 3px;
+    display:none;
+  }
+
+  /* ---------- Results panel ---------- */
+  .results-empty{
+    padding: 20px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    min-height: 320px;
+    text-align:center;
+    color: var(--ink-faint);
+  }
+  .results-empty .glyph{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 28px;
+    color: var(--line);
+    margin-bottom: 12px;
+  }
+  .results-empty p{ font-size: 13px; max-width: 240px; line-height: 1.6; }
+
+  .results-loading{
+    padding: 20px;
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    min-height: 320px;
+    gap: 14px;
+  }
+  .spinner{
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    border: 3px solid var(--line);
+    border-top-color: var(--ink);
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin{ to{ transform: rotate(360deg); } }
+  .results-loading span{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px;
+    color: var(--ink-faint);
+    letter-spacing: 0.05em;
+  }
+
+  .results-content{ display:none; }
+
+  .verdict-row{
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    padding: 20px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .verdict-label{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 6px;
+  }
+  .verdict-value{
+    font-family: 'Newsreader', serif;
+    font-size: 26px;
+    font-weight: 600;
+    margin: 0;
+  }
+  .verdict-value.tumor{ color: var(--accent-tumor); }
+  .verdict-value.normal{ color: var(--accent-normal); }
+
+  .verdict-badge{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.03em;
+  }
+  .verdict-badge.tumor{ background: var(--accent-tumor-bg); color: var(--accent-tumor); }
+  .verdict-badge.normal{ background: var(--accent-normal-bg); color: var(--accent-normal); }
+
+  /* Instrument readout */
+  .readout{
+    margin: 20px 20px 4px;
+    background: var(--readout-bg);
+    border-radius: 4px;
+    padding: 16px 18px;
+  }
+  .readout-label{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--readout-fg-dim);
+    margin: 0 0 6px;
+  }
+  .readout-value{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 30px;
+    font-weight: 500;
+    color: var(--readout-fg);
+    letter-spacing: 0.02em;
+  }
+  .readout-value .unit{
+    font-size: 14px;
+    color: var(--readout-fg-dim);
+    margin-left: 6px;
+  }
+
+  /* Gauge */
+  .gauge-wrap{ padding: 22px 20px 8px; }
+  .gauge-title{
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    margin: 0 0 12px;
+  }
+  .gauge-track{
+    position: relative;
+    height: 10px;
+    border-radius: 6px;
+    background: linear-gradient(to right,
+      var(--accent-normal) 0%, var(--accent-normal) 46%,
+      #E7C86B 50%,
+      var(--accent-tumor) 54%, var(--accent-tumor) 100%);
+  }
+  .gauge-marker{
+    position: absolute;
+    top: -7px;
+    width: 2px;
+    height: 24px;
+    background: var(--ink);
+    transform: translateX(-1px);
+  }
+  .gauge-marker::after{
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid var(--ink);
+  }
+  .gauge-scale{
+    display:flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px;
+    color: var(--ink-faint);
+  }
+
+  .detail-list{
+    padding: 18px 20px 20px;
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px 20px;
+  }
+  .detail-item dt{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0 0 4px;
+  }
+  .detail-item dd{
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .disclaimer{
+    margin: 0 20px 20px;
+    padding: 12px 14px;
+    background: var(--line-soft);
+    border-radius: 3px;
+    font-size: 11px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+  }
+
+  /* Footer strip */
+  .footer-strip{
+    margin-top: 28px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    display:flex;
+    justify-content: space-between;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px;
+    color: var(--ink-faint);
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="letterhead">
+    <div>
+      <p class="letterhead-eyebrow">Prediction Track &middot; Breast Tissue Panel</p>
+      <h1 class="letterhead-title">Gene Expression Cancer Prediction</h1>
+    </div>
+    <div class="letterhead-meta">
+      Model: Autoencoder + 1D-CNN<br/>
+      Classes: Tumor / Normal
+    </div>
+  </div>
+  <p class="subline">
+    Submit a patient's gene expression profile to run it through the trained encoder and CNN pipeline.
+    Results are a probability estimate from a research model, not a clinical diagnosis.
+  </p>
+
+  <div class="grid">
+
+    <!-- INPUT PANEL -->
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Sample Input</h2>
+      </div>
+      <div class="panel-body">
+
+        <div class="tabs" role="tablist">
+          <button class="tab-btn active" id="tab-btn-upload" role="tab" aria-selected="true" onclick="switchTab('upload')">Upload CSV</button>
+          <button class="tab-btn" id="tab-btn-paste" role="tab" aria-selected="false" onclick="switchTab('paste')">Paste JSON</button>
+        </div>
+
+        <div class="tab-pane active" id="tab-upload">
+          <label class="field-label">Gene expression file</label>
+          <p class="field-hint">CSV with one row: gene ID column headers, expression values below.</p>
+          <div class="upload-box" id="dropZone">
+            <label class="upload-label" for="fileInput">Choose file</label>
+            <input type="file" id="fileInput" accept=".csv,.json" onchange="handleFile(event)"/>
+            <p>or drag a .csv file here</p>
+            <div class="fname" id="fileName"></div>
+          </div>
+        </div>
+
+        <div class="tab-pane" id="tab-paste">
+          <label class="field-label" for="jsonInput">gene_expression object</label>
+          <p class="field-hint">{"1007_s_at": 5.2, "1053_at": 0.1, ...}</p>
+          <textarea id="jsonInput" placeholder='{"1007_s_at": 5.2, "1053_at": 0.1}'></textarea>
+        </div>
+
+        <div class="btn-row">
+          <button class="primary" id="submitBtn" onclick="runPrediction()">Run Prediction</button>
+          <button class="secondary" onclick="loadExample()">Try Example Patient</button>
+        </div>
+
+        <div class="error-msg" id="errorMsg"></div>
+      </div>
+    </div>
+
+    <!-- RESULTS PANEL -->
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Result</h2>
+      </div>
+
+      <div class="results-empty" id="resultsEmpty">
+        <div class="glyph">&#8709;</div>
+        <p>No sample submitted yet. Upload or paste a gene expression profile to see a prediction.</p>
+      </div>
+
+      <div class="results-loading" id="resultsLoading">
+        <div class="spinner"></div>
+        <span>RUNNING ENCODER &rarr; CNN&hellip;</span>
+      </div>
+
+      <div class="results-content" id="resultsContent">
+        <div class="verdict-row">
+          <div>
+            <p class="verdict-label">Prediction</p>
+            <p class="verdict-value" id="verdictValue">&mdash;</p>
+          </div>
+          <div class="verdict-badge" id="verdictBadge">&mdash;</div>
+        </div>
+
+        <div class="readout">
+          <p class="readout-label">Tumor Probability</p>
+          <div class="readout-value" id="readoutValue">0.0000</div>
+        </div>
+
+        <div class="gauge-wrap">
+          <p class="gauge-title">Normal &nbsp;&larr;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rarr;&nbsp; Tumor</p>
+          <div class="gauge-track">
+            <div class="gauge-marker" id="gaugeMarker" style="left: 0%;"></div>
+          </div>
+          <div class="gauge-scale">
+            <span>0.0</span><span>0.5</span><span>1.0</span>
+          </div>
+        </div>
+
+        <dl class="detail-list">
+          <div class="detail-item">
+            <dt>Confidence</dt>
+            <dd id="confidenceValue">&mdash;</dd>
+          </div>
+          <div class="detail-item">
+            <dt>Threshold</dt>
+            <dd>0.500</dd>
+          </div>
+        </dl>
+
+        <div class="disclaimer">
+          This is a research-stage model trained on a small, single-tissue GEO/TCGA dataset. It is
+          not a validated diagnostic tool and should not inform real medical decisions.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer-strip">
+    <span>API: <span id="apiStatus">not configured</span></span>
+    <span>Cancer Prediction from Gene Expression Data &middot; Prediction Track</span>
+  </div>
+
+</div>
+
+<script>
+  // ---------------------------------------------------------------------
+  // Configure this to your deployed backend URL, e.g. "https://your-app.onrender.com"
+  // ---------------------------------------------------------------------
+  const API_BASE_URL = "http://localhost:5000";
+
+  document.getElementById("apiStatus").textContent = API_BASE_URL;
+
+  function switchTab(name){
+    document.querySelectorAll(".tab-pane").forEach(el => el.classList.remove("active"));
+    document.querySelectorAll(".tab-btn").forEach(el => {
+      el.classList.remove("active");
+      el.setAttribute("aria-selected", "false");
+    });
+    document.getElementById("tab-" + name).classList.add("active");
+    const btn = document.getElementById("tab-btn-" + name);
+    btn.classList.add("active");
+    btn.setAttribute("aria-selected", "true");
+  }
+
+  let pendingGeneData = null;
+
+  function handleFile(event){
+    const file = event.target.files[0];
+    if (!file) return;
+    document.getElementById("fileName").textContent = file.name;
+
+    const reader = new FileReader();
+    reader.onload = function(e){
+      try{
+        if (file.name.endsWith(".json")){
+          pendingGeneData = JSON.parse(e.target.result);
+        } else {
+          // Simple CSV parse: first row = gene IDs, second row = values
+          const lines = e.target.result.trim().split("\n");
+          const headers = lines[0].split(",").map(h => h.trim());
+          const values = lines[1].split(",").map(v => parseFloat(v.trim()));
+          pendingGeneData = {};
+          headers.forEach((h, i) => { pendingGeneData[h] = values[i]; });
+        }
+      } catch(err){
+        showError("Could not parse file: " + err.message);
+        pendingGeneData = null;
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  function loadExample(){
+    // Small illustrative example — a real request needs a value for every gene
+    // the model was trained on (thousands of genes), this is just for demoing the UI.
+    switchTab("paste");
+    document.getElementById("jsonInput").value = JSON.stringify(
+      { "1007_s_at": 6.8, "1053_at": 4.1, "117_at": 3.2, "121_at": 7.9 },
+      null, 2
+    );
+  }
+
+  function showError(msg){
+    const el = document.getElementById("errorMsg");
+    el.textContent = msg;
+    el.style.display = "block";
+  }
+  function hideError(){
+    document.getElementById("errorMsg").style.display = "none";
+  }
+
+  async function runPrediction(){
+    hideError();
+
+    let geneData = pendingGeneData;
+    const pasteTab = document.getElementById("tab-paste");
+    if (pasteTab.classList.contains("active")){
+      const raw = document.getElementById("jsonInput").value.trim();
+      if (!raw){ showError("Paste a gene_expression JSON object first."); return; }
+      try{
+        geneData = JSON.parse(raw);
+      } catch(err){
+        showError("Invalid JSON: " + err.message);
+        return;
+      }
+    }
+
+    if (!geneData){
+      showError("Upload a file or paste gene expression data first.");
+      return;
+    }
+
+    setLoading(true);
+
+    try{
+      const response = await fetch(`${API_BASE_URL}/predict`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ gene_expression: geneData })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok){
+        throw new Error(data.error || "Prediction request failed.");
+      }
+
+      renderResult(data);
+    } catch(err){
+      setLoading(false);
+      showError(
+        err.message.includes("fetch")
+          ? "Could not reach the backend API. Is it running and is API_BASE_URL set correctly?"
+          : err.message
+      );
+    }
+  }
+
+  function setLoading(isLoading){
+    document.getElementById("submitBtn").disabled = isLoading;
+    document.getElementById("resultsEmpty").style.display = isLoading ? "none" : "flex";
+    document.getElementById("resultsLoading").style.display = isLoading ? "flex" : "none";
+    if (isLoading) document.getElementById("resultsContent").style.display = "none";
+  }
+
+  function renderResult(data){
+    setLoading(false);
+    document.getElementById("resultsEmpty").style.display = "none";
+    document.getElementById("resultsContent").style.display = "block";
+
+    const isTumor = data.prediction === "tumor";
+    const probability = data.tumor_probability;
+    const confidence = data.confidence;
+
+    const verdictEl = document.getElementById("verdictValue");
+    verdictEl.textContent = isTumor ? "Tumor Detected" : "Normal";
+    verdictEl.className = "verdict-value " + (isTumor ? "tumor" : "normal");
+
+    const badgeEl = document.getElementById("verdictBadge");
+    badgeEl.textContent = isTumor ? "ABNORMAL" : "WITHIN RANGE";
+    badgeEl.className = "verdict-badge " + (isTumor ? "tumor" : "normal");
+
+    document.getElementById("readoutValue").textContent = probability.toFixed(4);
+    document.getElementById("confidenceValue").textContent = (confidence * 100).toFixed(1) + "%";
+    document.getElementById("gaugeMarker").style.left = (probability * 100) + "%";
+  }
+</script>
+
+</body>
+</html>
